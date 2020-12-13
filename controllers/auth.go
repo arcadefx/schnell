@@ -49,26 +49,14 @@ func getAuthRequest(r *http.Request) models.RequestData {
 
 func validateRequest(data models.RequestData) models.ValidationResponse {
 	isValid := true
-	message := "username or password is incorrect"
+	message := "user authorized"
 
-	if !models.IsEmailValid(data.Email) {
+	if !models.IsEmailValid(data.Email) ||
+		!models.IsPasswordValid(data.Password) ||
+		!models.IsOneTimeUseTokenValid(data.Token) ||
+		!models.HasValidCredentials(data.Email, data.Password) {
 		isValid = false
-	}
-
-	if !models.IsPasswordValid(data.Password) {
-		isValid = false
-	}
-
-	if !models.IsOneTimeUseTokenValid(data.Token) {
-		isValid = false
-	}
-
-	if !models.HasValidCredentials(data.Email, data.Password) {
-		isValid = false
-	}
-
-	if isValid {
-		message = "user authorized"
+		message = "username or password is incorrect"
 	}
 
 	return models.ValidationResponse{
